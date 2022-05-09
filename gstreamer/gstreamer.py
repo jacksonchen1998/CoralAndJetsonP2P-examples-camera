@@ -195,9 +195,9 @@ class GstPipeline:
 def get_dev_board_model():
   try:
     model = open('/sys/firmware/devicetree/base/model').read().lower()
-    if 'mx8mq' in model:
+    if 'mx8mq' in model: # coral dev board
         return 'mx8mq'
-    if 'mt8167' in model:
+    if 'mt8167' in model: # coral dev board mini
         return 'mt8167'
   except: pass
   return None

@@ -39,8 +39,8 @@ from common import avg_fps_counter, SVG
 from pycoral.adapters.common import input_size
 from pycoral.adapters.detect import get_objects
 from pycoral.utils.dataset import read_label_file
-from pycoral.utils.edgetpu import make_interpreter
-from pycoral.utils.edgetpu import run_inference
+from pycoral.utils.edgetpu import make_interpreter # Creates a new tf.lite.Interpreter instance using the given model.
+from pycoral.utils.edgetpu import run_inference # Performs interpreter invoke() with a raw input tensor.
 
 def generate_svg(src_size, inference_box, objs, labels, text_lines):
     svg = SVG(src_size)
@@ -64,7 +64,7 @@ def generate_svg(src_size, inference_box, objs, labels, text_lines):
         percent = int(100 * obj.score)
         label = '{}% {}'.format(percent, labels.get(obj.id, obj.id))
         svg.add_text(x, y - 5, label, 20)
-        svg.add_rect(x, y, w, h, 'red', 2)
+        svg.add_rect(x, y, w, h, 'red', 2) # add rectangle
     return svg.finish()
 
 def main():
@@ -72,6 +72,7 @@ def main():
     default_model = 'mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite'
     default_labels = 'coco_labels.txt'
     parser = argparse.ArgumentParser()
+    # os.path.join 连接两个或更多的路径名组件
     parser.add_argument('--model', help='.tflite model path',
                         default=os.path.join(default_model_dir,default_model))
     parser.add_argument('--labels', help='label file path',
@@ -82,6 +83,8 @@ def main():
                         help='classifier score threshold')
     parser.add_argument('--videosrc', help='Which video source to use. ',
                         default='/dev/video0')
+    parser.add_argument('--headless', help='Run without displaying the video.',
+                        default=False, type=bool)
     parser.add_argument('--videofmt', help='Input video format.',
                         default='raw',
                         choices=['raw', 'h264', 'jpeg'])
@@ -91,7 +94,7 @@ def main():
     interpreter = make_interpreter(args.model)
     interpreter.allocate_tensors()
     labels = read_label_file(args.labels)
-    inference_size = input_size(interpreter)
+    inference_size = input_sizefinish(interpreter)
 
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
@@ -110,11 +113,13 @@ def main():
       print(' '.join(text_lines))
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
 
+    # gstreamer.py
     result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480),
                                     appsink_size=inference_size,
                                     videosrc=args.videosrc,
-                                    videofmt=args.videofmt)
+                                    videofmt=args.videofmt,
+                                    headless=args.headless) # new
 
 if __name__ == '__main__':
     main()

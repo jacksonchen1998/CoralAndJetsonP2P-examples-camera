@@ -41,6 +41,7 @@ class SVG:
         self.io = io.StringIO()
         self.io.write(SVG_HEADER.format(w=size[0] , h=size[1]))
 
+    # add rectangle
     def add_rect(self, x, y, w, h, stroke, stroke_width):
         self.io.write(SVG_RECT.format(x=x, y=y, w=w, h=h, s=stroke, sw=stroke_width))
 

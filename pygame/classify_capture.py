@@ -57,7 +57,7 @@ def main():
         last_time = time.monotonic()
         while True:
             imagen = camera.get_image()
-            imagen = pygame.transform.scale(imagen, inference_size)
+            imagen = pygame.transform.scale(imagen, inference_size) # transfer camera size to monitor size
             start_ms = time.time()
             run_inference(interpreter, imagen.get_buffer().raw)
             results = get_classes(interpreter, top_k=3, score_threshold=0)
