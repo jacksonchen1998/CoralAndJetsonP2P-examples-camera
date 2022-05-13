@@ -111,6 +111,11 @@ def main():
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
       print(' '.join(text_lines))
+
+      f = open("detect_fps.txt", "w+") # new
+      f.write(fps + "\n")
+      f.close()
+
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
 
     # gstreamer.py

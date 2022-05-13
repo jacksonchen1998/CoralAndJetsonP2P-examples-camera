@@ -90,6 +90,11 @@ def main():
           'Inference: {:.2f} ms'.format((end_time - start_time) * 1000),
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
+
+      f = open("classify_fps.txt", "w+") # new
+      f.write(fps + "\n")
+      f.close()
+
       for result in results:
           text_lines.append('score={:.2f}: {}'.format(result.score, labels.get(result.id, result.id)))
       print(' '.join(text_lines))
