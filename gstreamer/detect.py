@@ -112,7 +112,7 @@ def main():
       ]
       print(' '.join(text_lines))
 
-      f = open("detect_fps.txt", "w+") # new
+      f = open("/fps/detect_fps.txt", "w+") # new
       f.write(fps + "\n")
       f.close()
 

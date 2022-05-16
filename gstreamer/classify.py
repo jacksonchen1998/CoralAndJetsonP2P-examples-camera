@@ -91,7 +91,7 @@ def main():
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
 
-      f = open("classify_fps.txt", "w+") # new
+      f = open("/fps/classify_fps.txt", "w+") # new
       f.write(fps + "\n")
       f.close()
 
