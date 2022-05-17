@@ -96,6 +96,8 @@ def main():
     labels = read_label_file(args.labels)
     inference_size = input_sizefinish(interpreter)
 
+    f = open("fps/p2p_detect_fps.txt", "w") # open txt
+
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
 
@@ -112,19 +114,20 @@ def main():
       ]
       print(' '.join(text_lines))
 
-      f = open("/fps/detect_fps.txt", "w+") # new
-      f.write(fps + "\n")
-      f.close()
+      f.write(' '.join(text_lines) + "\n") # write info.
 
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
 
     # gstreamer.py
-    result = gstreamer.run_pipeline(user_callback,
+    try:
+      result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480),
                                     appsink_size=inference_size,
                                     videosrc=args.videosrc,
                                     videofmt=args.videofmt,
                                     headless=args.headless) # new
+    except KeyboardInterrupt: # ctrl + c, exit
+      f.close()
 
 if __name__ == '__main__':
     main()

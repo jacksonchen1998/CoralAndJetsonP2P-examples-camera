@@ -75,6 +75,8 @@ def main():
     labels = read_label_file(args.labels)
     inference_size = input_size(interpreter)
 
+    f = open("fps/p2p_classify_fps.txt", "w") # open file
+
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
 
@@ -91,22 +93,23 @@ def main():
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
 
-      f = open("/fps/classify_fps.txt", "w+") # new
-      f.write(fps + "\n")
-      f.close()
-
       for result in results:
           text_lines.append('score={:.2f}: {}'.format(result.score, labels.get(result.id, result.id)))
       print(' '.join(text_lines))
+      f.write(' '.join(text_lines) + '\n')
+
       return generate_svg(src_size, text_lines)
 
-    result = gstreamer.run_pipeline(user_callback,
+    try:
+        result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480), # camera Image resolution
                                     appsink_size=inference_size, # mointor size
                                     videosrc=args.videosrc,
                                     videofmt=args.videofmt,
                                     headless=args.headless)
-    gstreamer.run_pipeline
+    except KeyboardInterrupt:
+        f.close()
+    # gstreamer.run_pipeline
 
 if __name__ == '__main__':
     main()
