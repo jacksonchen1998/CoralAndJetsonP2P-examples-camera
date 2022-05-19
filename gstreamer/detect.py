@@ -115,6 +115,9 @@ def main():
       print(' '.join(text_lines))
 
       f.write(' '.join(text_lines) + "\n") # write info.
+      f.flush()
+      os.system('./demo.sh') # transfer txt to jetson nano
+
 
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
 

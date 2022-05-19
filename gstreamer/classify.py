@@ -97,10 +97,13 @@ def main():
           text_lines.append('score={:.2f}: {}'.format(result.score, labels.get(result.id, result.id)))
       print(' '.join(text_lines))
       f.write(' '.join(text_lines) + '\n')
+      f.flush()
+      os.system('./demo.sh') # transfer txt to jetson nano
 
       return generate_svg(src_size, text_lines)
 
     try:
+        gstreamer.pipeline.
         result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480), # camera Image resolution
                                     appsink_size=inference_size, # mointor size
@@ -109,6 +112,7 @@ def main():
                                     headless=args.headless)
     except KeyboardInterrupt:
         f.close()
+
     # gstreamer.run_pipeline
 
 if __name__ == '__main__':
