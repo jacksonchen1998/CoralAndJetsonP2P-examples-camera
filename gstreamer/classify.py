@@ -58,8 +58,7 @@ def main():
     parser.add_argument('--videosrc', help='Which video source to use. ',
                         default='/dev/video0')
                         # 執行時是否不顯示攝像頭拍攝鏡頭，預設為要顯示
-    parser.add_argument('--headless', help='Run without displaying the video.',
-                        default=False, type=bool)
+    3
     parser.add_argument('--videofmt', help='Input video format.',
                         default='raw',
                         choices=['raw', 'h264', 'jpeg'])

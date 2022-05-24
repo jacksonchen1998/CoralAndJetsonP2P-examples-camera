@@ -83,11 +83,11 @@ def main():
                         help='classifier score threshold')
     parser.add_argument('--videosrc', help='Which video source to use. ',
                         default='/dev/video0')
-    parser.add_argument('--headless', help='Run without displaying the video.',
-                        default=False, type=bool)
     parser.add_argument('--videofmt', help='Input video format.',
                         default='raw',
                         choices=['raw', 'h264', 'jpeg'])
+    parser.add_argument('--headless', help='Run without displaying the video.',
+                        default=False, type=bool)
     args = parser.parse_args()
 
     print('Loading {} with {} labels.'.format(args.model, args.labels))
