@@ -36,7 +36,7 @@ from pycoral.adapters.classify import get_classes # Gets results from a classifi
 def generate_svg(size, text_lines):
     svg = SVG(size)
     for y, line in enumerate(text_lines, start=1):
-      svg.add_text(10, y * 20, line, 20)
+      svg.add_text(10, y * 20, line, 10)
     return svg.finish()
 
 def main():
@@ -74,7 +74,8 @@ def main():
     labels = read_label_file(args.labels)
     inference_size = input_size(interpreter)
 
-    f = open("fps/p2p_classify_fps.txt", "w") # open file
+    file_send = open("p2p_classify_fps.txt", "w") # open file
+    file_receive = open("p2p_tensorrt_fps.txt", "r")
 
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
@@ -92,26 +93,30 @@ def main():
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
 
+      os.system('./receive.sh') # transfer txt to jetson nano
+
+      text_show = [
+          ' ',
+          'Inference: {:.2f} ms'.format((end_time - start_time) * 1000),
+          'FPS: {} fps'.format(round(next(fps_counter))),
+          'Info: {}.'.format(file_receive.readline()),
+      ]
+
       for result in results:
           text_lines.append('score={:.2f}: {}'.format(result.score, labels.get(result.id, result.id)))
-      print(' '.join(text_lines))
+      print(' '.join(text_show))
       f.write(' '.join(text_lines) + '\n')
       f.flush()
-      os.system('./demo.sh') # transfer txt to jetson nano
+      os.system('./send.sh') # transfer txt to jetson nano
 
-      return generate_svg(src_size, text_lines)
+      return generate_svg(src_size, text_show)
 
-    try:
-        gstreamer.pipeline.
-        result = gstreamer.run_pipeline(user_callback,
+    gstreamer.pipeline.result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480), # camera Image resolution
                                     appsink_size=inference_size, # mointor size
                                     videosrc=args.videosrc,
                                     videofmt=args.videofmt,
                                     headless=args.headless)
-    except KeyboardInterrupt:
-        f.close()
-
     # gstreamer.run_pipeline
 
 if __name__ == '__main__':

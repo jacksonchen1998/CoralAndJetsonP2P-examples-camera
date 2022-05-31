@@ -49,7 +49,7 @@ def generate_svg(src_size, inference_box, objs, labels, text_lines):
     scale_x, scale_y = src_w / box_w, src_h / box_h
 
     for y, line in enumerate(text_lines, start=1):
-        svg.add_text(10, y * 20, line, 20)
+        svg.add_text(10, y * 20, line, 10)
     for obj in objs:
         bbox = obj.bbox
         if not bbox.valid:
@@ -63,7 +63,7 @@ def generate_svg(src_size, inference_box, objs, labels, text_lines):
         x, y, w, h = x * scale_x, y * scale_y, w * scale_x, h * scale_y
         percent = int(100 * obj.score)
         label = '{}% {}'.format(percent, labels.get(obj.id, obj.id))
-        svg.add_text(x, y - 5, label, 20)
+        svg.add_text(x, y - 5, label, 10)
         svg.add_rect(x, y, w, h, 'red', 2) # add rectangle
     return svg.finish()
 
@@ -96,8 +96,8 @@ def main():
     labels = read_label_file(args.labels)
     inference_size = input_sizefinish(interpreter)
 
-    f = open("p2p_detect_fps.txt", "w") # open txt
-    f2 = open("p2p_tensorrt_fps.txt", "r")
+    file_send = open("p2p_detect_fps.txt", "w") # open txt
+    file_receive = open("p2p_tensorrt_fps.txt", "r")
 
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
@@ -109,34 +109,35 @@ def main():
       # For larger input image sizes, use the edgetpu.classification.engine for better performance
       objs = get_objects(interpreter, args.threshold)[:args.top_k]
       end_time = time.monotonic()
+
+      os.system("./receive.sh")
+      text_show = [
+          'Inference: {:.2f} ms'.format((end_time - start_time) * 1000),
+          'FPS: {} fps'.format(round(next(fps_counter))),
+          'Info: {}.'.format(file_receive.readline()),
+      ]
+
       text_lines = [
           'Inference: {:.2f} ms'.format((end_time - start_time) * 1000),
           'FPS: {} fps'.format(round(next(fps_counter))),
       ]
       print(' '.join(text_lines))
 
-      f.write(' '.join(text_lines) + "\n") # write info.
-      f.flush()
-      os.system("./receive.sh")
-
+      file_send.write(' '.join(text_lines) + "\n") # write info.
+      file_send.flush()
       os.system("./send.sh")
 
-      text_receive = f2.read()
-      print(' '.join(text_receive))
-
+      print(' '.join(text_show))
 
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
 
     # gstreamer.py
-    try:
-      result = gstreamer.run_pipeline(user_callback,
+    result = gstreamer.run_pipeline(user_callback,
                                     src_size=(640, 480),
                                     appsink_size=inference_size,
                                     videosrc=args.videosrc,
                                     videofmt=args.videofmt,
                                     headless=args.headless) # new
-    except KeyboardInterrupt: # ctrl + c, exit
-      f.close()
 
 if __name__ == '__main__':
     main()
