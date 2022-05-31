@@ -96,7 +96,8 @@ def main():
     labels = read_label_file(args.labels)
     inference_size = input_sizefinish(interpreter)
 
-    f = open("fps/p2p_detect_fps.txt", "w") # open txt
+    f = open("p2p_detect_fps.txt", "w") # open txt
+    f2 = open("p2p_tensorrt_fps.txt", "r")
 
     # Average fps over last 30 frames.
     fps_counter = avg_fps_counter(30)
@@ -116,7 +117,12 @@ def main():
 
       f.write(' '.join(text_lines) + "\n") # write info.
       f.flush()
-      os.system('./demo.sh') # transfer txt to jetson nano
+      os.system("./receive.sh")
+
+      os.system("./send.sh")
+
+      text_receive = f2.read()
+      print(' '.join(text_receive))
 
 
       return generate_svg(src_size, inference_box, objs, labels, text_lines)
